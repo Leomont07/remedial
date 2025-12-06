@@ -2,14 +2,10 @@ version: '3.8'
 
 services:
   backend-service:
-    # Construye la imagen desde el Dockerfile en el directorio actual
     build: .
-    # Define un nombre de contenedor
     container_name: mi_backend_node
-    # Mapea el puerto del contenedor al host (opcional, Nginx será el que acceda)
     ports:
       - "3001:3000"
-    # Reinicia si falla
     restart: always
     env_file:
       - .env

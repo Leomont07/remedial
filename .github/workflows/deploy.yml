@@ -1,7 +1,6 @@
 name: Node.js CI/CD a EC2 (Despliegue Automático)
 
 on:
-  # Se activa en cada push a la rama 'main'
   push:
     branches:
       - master 
@@ -11,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: ⬇️ Checkout del código
+    - name: ⬇Checkout del código
       uses: actions/checkout@v4
       
-    - name: 🛠️ Configurar Node.js (Ambiente de Pruebas)
+    - name: Configurar Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20' 
         
-    - name: 📦 Instalar dependencias de desarrollo y producción
+    - name: INSTALAR DEPENDENCIAS 
       run: |
         # 1. Limpia la caché para evitar conflictos de módulos
         npm cache clean --force
@@ -28,23 +27,20 @@ jobs:
         # 3. Instala dependencias (incluyendo devDependencies como mocha/chai)
         npm install
 
-    - name: 🔐 Forzar permisos de ejecución a binarios
+    - name: PERMITIR EJECUCIÓN DE PRUEBAS
       run: chmod +x node_modules/.bin/mocha
       
-    - name: ✅ Ejecutar Pruebas de Integración (Supertest)
-      # Esto fallará el pipeline si las pruebas no pasan
+    - name: SUPERTEST
       run: npm run test
-      env: # <-- AÑADIR ESTE BLOQUE
+      env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
-    - name: 🚀 Despliegue en EC2 y Clonación
-      # Usaremos la última versión estable (v1.0.3)
+    - name: Despliegue en EC2 y Clonación
       uses: appleboy/ssh-action@v1.0.3 
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        # RESTAURAR LA CLAVE PRIVADA DIRECTAMENTE para la conexión
         key: ${{ secrets.SSH_PRIVATE_KEY }} 
         # ELIMINAR agent: true
         
@@ -91,4 +87,4 @@ jobs:
           echo "Limpiando imágenes viejas para liberar espacio..."
           docker system prune -f
           
-          echo "✅ Despliegue de Node.js finalizado exitosamente."
+          echo "Despliegue de Node.js finalizado exitosamente."

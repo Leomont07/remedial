@@ -1,9 +1,7 @@
 import app from './index.js';
 
-// --- AÑADIR MANEJADORES DE PROCESOS ---
 process.on('uncaughtException', err => {
   console.error('[CRITICAL] Excepción NO CAPTURADA:', err);
-  // No debes mantener el proceso vivo después de uncaughtException.
   process.exit(1); 
 });
 
