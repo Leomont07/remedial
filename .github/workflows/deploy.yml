@@ -24,7 +24,7 @@ jobs:
       
     - name: ✅ Ejecutar Pruebas de Integración (Supertest)
       # Esto fallará el pipeline si las pruebas no pasan
-      run: npm test
+      run: npx mocha test/*.test.js
 
     - name: 🚀 Despliegue en EC2
       uses: appleboy/ssh-action@v1.0.3
