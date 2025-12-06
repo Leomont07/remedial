@@ -1,7 +1,6 @@
-const request = require('supertest');
-const expect = require('chai').expect;
-// Asume que tu archivo principal de Express es app.js
-const app = require('../app'); 
+import request from 'supertest';
+import { expect } from 'chai';
+import app from '../src/index.js';
 
 describe('Integración de Endpoints Principales', function() {
   // Aumenta el tiempo de espera para pruebas de integración si es necesario
