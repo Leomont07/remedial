@@ -38,18 +38,15 @@ jobs:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
-    - name: 🔑 Cargar Clave SSH
-      uses: webfactory/ssh-agent@v0.9.0
+    - name: 🚀 Despliegue en EC2 y Clonación
+      # Usaremos la última versión estable (v1.0.3)
+      uses: appleboy/ssh-action@v1.0.3 
       with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: 🚀 Despliegue en EC2
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        # Variables de conexión, deben estar configuradas como Secrets en GitHub
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        agent: true
+        # RESTAURAR LA CLAVE PRIVADA DIRECTAMENTE para la conexión
+        key: ${{ secrets.SSH_PRIVATE_KEY }} 
+        # ELIMINAR agent: true
         
         script: |
           # 1. Definir variables de ruta y repositorio
@@ -58,15 +55,24 @@ jobs:
 
           echo "Iniciando despliegue en el directorio: $APP_DIR"
           
-          # 2. Lógica de Saneamiento y Clonación
+          # 2. Lógica de Saneamiento y Clonación (USANDO LA CLAVE DIRECTA)
           mkdir -p $APP_DIR
           cd $APP_DIR
 
           if [ ! -d .git ]; then
             echo "WARN: Directorio no es un repo Git válido. Eliminando y clonando de nuevo..."
+            # Eliminar todo el contenido si no es un repo válido
             rm -rf $APP_DIR/* $APP_DIR/.*
-            # Ahora git clone DEBERÍA funcionar usando la clave reenviada por el agente SSH
-            git clone $REPO_URL . 
+            
+            # Clonar usando una URL HTTPS (si la clave SSH sigue fallando)
+            # USAR CLONACIÓN HTTPS CON ACCESO SSH DE LA ACCIÓN
+            git clone https://github.com/Leomont07/remedial.git .
+            
+            # NOTA: Si el SSH directo falla, HTTPS es el respaldo.
+            # Pero en la mayoría de los casos, la clave directa funciona. 
+            # Mantengamos el SSH por ahora:
+            # git clone $REPO_URL . 
+            
           else
             echo "Pulling latest changes..."
             git pull
