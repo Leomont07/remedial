@@ -43,7 +43,7 @@ describe('Integración de Endpoints Principales', function() {
             });
     });
 
-    it('POST /api/booking/add debe devolver estado 201 y un objeto', (done) => {
+    it('POST /api/booking/add debería devolver estado 201 y un objeto', (done) => {
         const validServiceId = "6fbf3af6-6cca-48ea-9d74-8c5f44ad9ce9";
         const validUserId = "317e3e66-f7a5-40b9-95ef-4a59f630b6fa";
 
