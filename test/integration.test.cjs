@@ -1,17 +1,17 @@
 const request = require('supertest');
 const chai = require('chai');
 const expect = chai.expect;
-import app from '../src/index.js';
+
+const expressModule = require('../src/index.js');
+const app = expressModule.default;
 
 describe('Integración de Endpoints Principales', function() {
   // Aumenta el tiempo de espera para pruebas de integración si es necesario
   this.timeout(5000); 
 
-  const expressApp = (app && app.default) ? app.default : app;
-
   // Prueba 1: Verificar el endpoint raíz (/)
   it('GET / debe devolver un estado 200 y mensaje de bienvenida', (done) => {
-    request(expressApp)
+    request(app)
       .get('/')
       .expect(200)
       .end((err, res) => {
@@ -24,7 +24,7 @@ describe('Integración de Endpoints Principales', function() {
 
   // Prueba 2: Verificar un endpoint de ejemplo de microservicio (ej. /users)
   it('GET /users debe devolver una lista (array) y estado 200', (done) => {
-    request(expressApp)
+    request(app)
       .get('/users')
       .expect(200)
       .end((err, res) => {
@@ -37,7 +37,7 @@ describe('Integración de Endpoints Principales', function() {
   // Prueba 3: Verificar un endpoint que requiere POST (ej. /products)
   it('POST /products debe devolver estado 201 y el objeto creado', (done) => {
     const newProduct = { name: 'Test Product', price: 9.99 };
-    request(expressApp)
+    request(app)
       .post('/products')
       .send(newProduct)
       .expect(201)
