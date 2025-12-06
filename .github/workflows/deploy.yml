@@ -1,9 +1,10 @@
-name: Node.js CI/CD a EC2
+name: Node.js CI/CD a EC2 (Despliegue Automático)
 
 on:
+  # Se activa en cada push a la rama 'main'
   push:
     branches:
-      - main
+      - main 
 
 jobs:
   build_and_deploy:
@@ -13,50 +14,63 @@ jobs:
     - name: ⬇️ Checkout del código
       uses: actions/checkout@v4
       
-    - name: 🛠️ Configurar Node.js
+    - name: 🛠️ Configurar Node.js (Ambiente de Pruebas)
       uses: actions/setup-node@v4
       with:
-        node-version: '20' # Usa la versión de Node que necesites
+        node-version: '20' 
         
-    - name: 📦 Instalar dependencias
+    - name: 📦 Instalar dependencias de desarrollo y producción
       run: npm install
       
     - name: ✅ Ejecutar Pruebas de Integración (Supertest)
-      # Asume que tu script de pruebas en package.json es "test": "mocha test/*.test.js"
+      # Esto fallará el pipeline si las pruebas no pasan
       run: npm test
 
     - name: 🚀 Despliegue en EC2
       uses: appleboy/ssh-action@v1.0.3
       with:
+        # Variables de conexión, deben estar configuradas como Secrets en GitHub
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
+        
         script: |
-          # El script de despliegue se ejecuta en el EC2
+          # 1. Definir variables de ruta y repositorio
           APP_DIR="/home/${{ secrets.EC2_USER }}/node-backend"
+          # Usar la URL SSH para autenticación
+          REPO_URL="git@github.com:${{ github.repository }}.git" 
+
+          echo "Iniciando despliegue en el directorio: $APP_DIR"
           
-          echo "Iniciando despliegue en $APP_DIR"
-          
-          # Clonar/Actualizar el código. Usa la clave SSH que configuramos en la EC2.
+          # 2. Clonar el repositorio si no existe
           if [ ! -d $APP_DIR ]; then
-            git clone git@github.com:${{ github.repository }}.git $APP_DIR
+            echo "Directorio no encontrado. Clonando repositorio..."
+            mkdir -p $APP_DIR
+            # Clonación inicial usando la clave SSH
+            git clone $REPO_URL $APP_DIR
           fi
           
           cd $APP_DIR
+          
+          # 3. Actualizar el código
+          echo "Pulling latest changes..."
           git pull
           
-          # Reconstruir la imagen y relanzar el contenedor
-          # Esto requiere que Dockerfile y docker-compose.yml estén en el repo
+          # 4. Detener y remover contenedores antiguos
           echo "Deteniendo y removiendo contenedores previos..."
+          # Asume que docker-compose.yml del backend está en el repo
           docker compose down --remove-orphans
           
+          # 5. Construir la nueva imagen
           echo "Construyendo nueva imagen Docker..."
           docker compose build
           
-          echo "Lanzando nuevos contenedores en modo detached..."
+          # 6. Lanzar los nuevos contenedores en modo detached
+          echo "Lanzando nuevos contenedores..."
           docker compose up -d
           
-          echo "Limpiando imágenes viejas..."
+          # 7. Limpiar imágenes no utilizadas
+          echo "Limpiando imágenes viejas para liberar espacio..."
           docker system prune -f
           
-          echo "Despliegue finalizado exitosamente."
+          echo "✅ Despliegue de Node.js finalizado exitosamente."
