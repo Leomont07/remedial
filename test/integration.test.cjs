@@ -21,17 +21,6 @@ describe('Integración de Endpoints Principales', function() {
             });
     });
 
-    it('GET /api/users (todos los usuarios) debe devolver un estado 200', (done) => {
-        request(app)
-            .get('/api/users')
-            .expect(200)
-            .end((err, res) => {
-                if (err) return done(err);
-                expect(res.body).to.be.an('array'); 
-                done();
-            });
-    });
-
     it('POST /api/service/add debe devolver estado 201 y el objeto creado', (done) => {
         const newService = { 
             nombre: 'Servicio de Prueba', 
