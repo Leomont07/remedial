@@ -11,17 +11,7 @@ const app = express()
 app.use(cors({ origin: '*', credentials: true }))
 app.use(express.json())
 
-// Conexión Supabase
-export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-)
 
-// Rutas
-app.use('/api/auth', authRoutes)
-app.use('/api/users', userRoutes)
-app.use('/api/service', serviceRoutes)
-app.use('/api/booking', bookingRoutes)
 
 app.get('/', (req, res) => { 
   res.status(200).json({ message: 'Bienvenido al server' });
