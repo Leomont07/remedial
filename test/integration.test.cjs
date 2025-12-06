@@ -15,7 +15,7 @@ describe('Integración de Endpoints Principales', function() {
             .expect(200)
             .end((err, res) => {
                 if (err) return done(err);
-                expect(res.body.message).to.be.equal('Bienvenido al server');
+                expect(res.body.message).to.be.equal('Bienvenido al server111');
                 expect(res.body).to.be.an('object'); 
                 done();
             });
@@ -67,5 +67,4 @@ describe('Integración de Endpoints Principales', function() {
             });
     });
 
-    // Eliminamos la prueba GET / y POST /products que causaban 404.
 });

@@ -36,7 +36,7 @@ app.use('/api/service', serviceRoutes)
 app.use('/api/booking', bookingRoutes)
 
 app.get('/', (req, res) => { 
-  res.status(200).json({ message: 'Bienvenido al server' });
+  res.status(200).json({ message: 'Bienvenido al server111' });
 });
 
 const PORT = process.env.PORT || 3000
