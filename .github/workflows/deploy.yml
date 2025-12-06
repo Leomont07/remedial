@@ -38,13 +38,18 @@ jobs:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
+    - name: 🔑 Cargar Clave SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
     - name: 🚀 Despliegue en EC2
       uses: appleboy/ssh-action@v1.0.3
       with:
         # Variables de conexión, deben estar configuradas como Secrets en GitHub
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        agent: true
         
         script: |
           # 1. Definir variables de ruta y repositorio
@@ -59,18 +64,16 @@ jobs:
 
           if [ ! -d .git ]; then
             echo "WARN: Directorio no es un repo Git válido. Eliminando y clonando de nuevo..."
-            # Eliminar todo el contenido si no es un repo válido
-            rm -rf $APP_DIR/* $APP_DIR/.* # Clonación inicial usando la clave SSH
+            rm -rf $APP_DIR/* $APP_DIR/.*
+            # Ahora git clone DEBERÍA funcionar usando la clave reenviada por el agente SSH
             git clone $REPO_URL . 
           else
-            # Si es un repo válido, solo actualiza
             echo "Pulling latest changes..."
             git pull
           fi
           
           # 3. Construir y lanzar Docker
           echo "Deteniendo y removiendo contenedores previos..."
-          # Asegúrate de que docker-compose.yml del backend esté en el repo
           docker compose down --remove-orphans
           
           echo "Construyendo nueva imagen Docker..."
