@@ -3,7 +3,7 @@ name: Node.js CI/CD a EC2
 on:
   push:
     branches:
-      - main
+      - main # Cambia a 'master' si usas esa rama
 
 jobs:
   build_and_deploy:
@@ -16,20 +16,15 @@ jobs:
     - name: 🛠️ Configurar Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '20' # Usa la versión de Node que necesites
         
     - name: 📦 Instalar dependencias
       run: npm install
       
     - name: ✅ Ejecutar Pruebas de Integración (Supertest)
+      # Asume que tu script de pruebas en package.json es "test": "mocha test/*.test.js"
       run: npm test
 
-    - name: 🐳 Construir y Empujar la Imagen (Opcional: Si usas un Container Registry)
-      # Si usas un Container Registry (AWS ECR, Docker Hub), aquí iría el login y el push.
-      # Para un despliegue directo a EC2 con el código fuente, este paso puede omitirse.
-      # Usaremos el código fuente para simplificar el script de despliegue.
-      run: echo "Pruebas pasadas. Iniciando despliegue..."
-      
     - name: 🚀 Despliegue en EC2
       uses: appleboy/ssh-action@v1.0.3
       with:
@@ -37,27 +32,31 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          # 1. Crear/Cambiar al directorio de la aplicación
+          # El script de despliegue se ejecuta en el EC2
           APP_DIR="/home/${{ secrets.EC2_USER }}/node-backend"
-          mkdir -p $APP_DIR
-          cd $APP_DIR
-
-          # 2. Clonar/Actualizar el código desde GitHub
-          # Asegúrate de configurar un SSH key en la EC2 o usa un Personal Access Token para la URL HTTPS
-          REPO_URL="https://github.com/${{ github.repository }}.git"
-          if [ -d .git ]; then
-            git pull
-          else
-            git clone $REPO_URL .
+          
+          echo "Iniciando despliegue en $APP_DIR"
+          
+          # Clonar/Actualizar el código. Usa la clave SSH que configuramos en la EC2.
+          if [ ! -d $APP_DIR ]; then
+            git clone git@github.com:${{ github.repository }}.git $APP_DIR
           fi
-
-          # 3. Reconstruir la imagen y relanzar el contenedor con docker-compose
-          # Nota: Necesitas el Dockerfile y docker-compose.yml en el repo
+          
+          cd $APP_DIR
+          git pull
+          
+          # Reconstruir la imagen y relanzar el contenedor
+          # Esto requiere que Dockerfile y docker-compose.yml estén en el repo
+          echo "Deteniendo y removiendo contenedores previos..."
           docker compose down --remove-orphans
+          
+          echo "Construyendo nueva imagen Docker..."
           docker compose build
+          
+          echo "Lanzando nuevos contenedores en modo detached..."
           docker compose up -d
           
-          # 4. Limpiar imágenes antiguas no utilizadas
+          echo "Limpiando imágenes viejas..."
           docker system prune -f
           
           echo "Despliegue finalizado exitosamente."
