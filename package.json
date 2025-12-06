@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/start.js",
+    "start": "node --trace-warnings src/start.js",
     "test": "mocha test/*.test.cjs"
   },
   "keywords": [],
