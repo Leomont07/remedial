@@ -20,7 +20,13 @@ jobs:
         node-version: '20' 
         
     - name: 📦 Instalar dependencias de desarrollo y producción
-      run: npm install
+      run: |
+        # 1. Limpia la caché para evitar conflictos de módulos
+        npm cache clean --force
+        # 2. Elimina cualquier instalación antigua de node_modules
+        rm -rf node_modules
+        # 3. Instala dependencias (incluyendo devDependencies como mocha/chai)
+        npm install
 
     - name: 🔐 Forzar permisos de ejecución a binarios
       run: chmod +x node_modules/.bin/mocha
