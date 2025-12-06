@@ -8,7 +8,7 @@ services:
     container_name: mi_backend_node
     # Mapea el puerto del contenedor al host (opcional, Nginx será el que acceda)
     ports:
-      - "3000:3000"
+      - "3001:3000"
     # Reinicia si falla
     restart: always
     # Variables de entorno si las necesitas (ejemplo)
