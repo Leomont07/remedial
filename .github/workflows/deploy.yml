@@ -31,7 +31,12 @@ jobs:
     - name: 🔐 Forzar permisos de ejecución a binarios
       run: chmod +x node_modules/.bin/mocha
       
-
+    - name: ✅ Ejecutar Pruebas de Integración (Supertest)
+      # Esto fallará el pipeline si las pruebas no pasan
+      run: npm run test
+      env: # <-- AÑADIR ESTE BLOQUE
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
     - name: 🚀 Despliegue en EC2 y Clonación
       # Usaremos la última versión estable (v1.0.3)
