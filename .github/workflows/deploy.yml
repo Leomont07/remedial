@@ -49,39 +49,36 @@ jobs:
         script: |
           # 1. Definir variables de ruta y repositorio
           APP_DIR="/home/${{ secrets.EC2_USER }}/node-backend"
-          # Usar la URL SSH para autenticación
           REPO_URL="git@github.com:${{ github.repository }}.git" 
 
           echo "Iniciando despliegue en el directorio: $APP_DIR"
           
-          # 2. Clonar el repositorio si no existe
-          if [ ! -d $APP_DIR ]; then
-            echo "Directorio no encontrado. Clonando repositorio..."
-            mkdir -p $APP_DIR
-            # Clonación inicial usando la clave SSH
-            git clone $REPO_URL $APP_DIR
+          # 2. Lógica de Saneamiento y Clonación
+          mkdir -p $APP_DIR
+          cd $APP_DIR
+
+          if [ ! -d .git ]; then
+            echo "WARN: Directorio no es un repo Git válido. Eliminando y clonando de nuevo..."
+            # Eliminar todo el contenido si no es un repo válido
+            rm -rf $APP_DIR/* $APP_DIR/.* # Clonación inicial usando la clave SSH
+            git clone $REPO_URL . 
+          else
+            # Si es un repo válido, solo actualiza
+            echo "Pulling latest changes..."
+            git pull
           fi
           
-          cd $APP_DIR
-          
-          # 3. Actualizar el código
-          echo "Pulling latest changes..."
-          git pull
-          
-          # 4. Detener y remover contenedores antiguos
+          # 3. Construir y lanzar Docker
           echo "Deteniendo y removiendo contenedores previos..."
-          # Asume que docker-compose.yml del backend está en el repo
+          # Asegúrate de que docker-compose.yml del backend esté en el repo
           docker compose down --remove-orphans
           
-          # 5. Construir la nueva imagen
           echo "Construyendo nueva imagen Docker..."
           docker compose build
           
-          # 6. Lanzar los nuevos contenedores en modo detached
           echo "Lanzando nuevos contenedores..."
           docker compose up -d
           
-          # 7. Limpiar imágenes no utilizadas
           echo "Limpiando imágenes viejas para liberar espacio..."
           docker system prune -f
           
