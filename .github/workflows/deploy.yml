@@ -21,10 +21,13 @@ jobs:
         
     - name: 📦 Instalar dependencias de desarrollo y producción
       run: npm install
+
+    - name: 🔐 Forzar permisos de ejecución a binarios
+      run: chmod +x node_modules/.bin/mocha
       
     - name: ✅ Ejecutar Pruebas de Integración (Supertest)
       # Esto fallará el pipeline si las pruebas no pasan
-      run: npm run test
+      run: node node_modules/.bin/mocha test/*.test.js
 
     - name: 🚀 Despliegue en EC2
       uses: appleboy/ssh-action@v1.0.3
