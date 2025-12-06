@@ -1,36 +1,40 @@
 import express from 'express'
-import dotenv from 'dotenv'
 import cors from 'cors'
-//import { createClient } from '@supabase/supabase-js'
-//import authRoutes from './routes/authRoutes.js'
-//import serviceRoutes from'./routes/serviceRoutes.js'
-//import bookingRoutes from './routes/bookingRoutes.js'
-//import userRoutes from './routes/userRoutes.js'
+import { createClient } from '@supabase/supabase-js'
+import authRoutes from './routes/authRoutes.js'
+import serviceRoutes from'./routes/serviceRoutes.js'
+import bookingRoutes from './routes/bookingRoutes.js'
+import userRoutes from './routes/userRoutes.js'
 
 const app = express()
 app.use(cors({ origin: '*', credentials: true }))
 app.use(express.json())
 
-// Conexión Supabase
-//export const supabase = createClient(
-//  process.env.SUPABASE_URL,
-//  process.env.SUPABASE_KEY
-//)
+export let supabase; 
 
-// Rutas
-//app.use('/api/auth', authRoutes)
-//app.use('/api/users', userRoutes)
-//app.use('/api/service', serviceRoutes)
-//app.use('/api/booking', bookingRoutes)
+try {
+    supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_KEY
+    )
+    console.log("INFO: Cliente Supabase inicializado correctamente.");
 
+} catch (e) {
+    console.error("CRITICAL ERROR: Fallo al inicializar el cliente Supabase.");
+    console.error(e.message);
+    supabase = null; 
+}
+
+app.use('/api/auth', authRoutes)
+app.use('/api/users', userRoutes)
+app.use('/api/service', serviceRoutes)
+app.use('/api/booking', bookingRoutes)
+
+// RUTA DE SALUD
 app.get('/', (req, res) => { 
   res.status(200).json({ message: 'Bienvenido al server' });
 });
 
-const PORT = process.env.PORT || 3000 // Usa la variable de entorno o 3000 por defecto
+const PORT = process.env.PORT || 3000
 
 export default app;
-
-//app.listen(PORT, () => {
-  //  console.log(`🚀 Servidor en ejecución en el puerto ${PORT}`);
-//});
