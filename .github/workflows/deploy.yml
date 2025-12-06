@@ -3,7 +3,7 @@ name: Node.js CI/CD a EC2
 on:
   push:
     branches:
-      - main # Cambia a 'master' si usas esa rama
+      - main
 
 jobs:
   build_and_deploy:
