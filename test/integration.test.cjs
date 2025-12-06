@@ -47,7 +47,9 @@ describe('Integración de Endpoints Principales', function() {
             .expect(201)
             .end((err, res) => {
                 if (err) return done(err);
-                expect(res.body).to.have.property('nombre', 'Servicio de Prueba');
+                expect(res.body).to.have.property('servicio');
+                expect(res.body.servicio).to.have.property('nombre', 'Servicio de Prueba');
+                
                 done();
             });
     });
