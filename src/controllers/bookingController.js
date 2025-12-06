@@ -1,11 +1,11 @@
 import e from 'express'
 import { supabase } from '../index.js'
 
-if (!supabase) {
-        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
-    }
 
 export const add = async (req, res) => {
+    if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
     try {
         const { 
             idUsuario, idService, estatus, comentarios, 
@@ -68,6 +68,9 @@ export const add = async (req, res) => {
     }
 }
 export const remove = async (req, res) => {
+    if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
     const { id } = req.params
 
     try {
@@ -84,6 +87,9 @@ export const remove = async (req, res) => {
 }
 
 export const getBookById = async (req, res) => {
+    if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
     try {
         const { id } = req.params
         const { data, error } = await supabase
@@ -104,6 +110,9 @@ export const getBookById = async (req, res) => {
 }
 
 export const getBookingsByUserId = async (req, res) => {
+    if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
     try {
         const { idUsuario } = req.params
         
@@ -124,6 +133,9 @@ export const getBookingsByUserId = async (req, res) => {
 }
 
 export const getBookingsByHostId = async (req, res) => {
+    if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
   try {
     const { idHost } = req.params
 

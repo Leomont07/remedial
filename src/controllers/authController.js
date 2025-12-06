@@ -12,11 +12,12 @@ const generateVerificationToken = (userId) => {
   return jwt.sign({ id: userId }, VERIFY_SECRET, { expiresIn: VERIFY_EXPIRY })
 }
 
-if (!supabase) {
-        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
-    }
 
 export const register = async (req, res) => {
+    if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
+  
   try {
     const { nombre, email, password, tipo } = req.body
 
@@ -65,6 +66,10 @@ export const register = async (req, res) => {
 }
 
 export const verifyEmail = async (req, res) => {
+    if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
+  
   const { token } = req.params
 
   try {
@@ -101,6 +106,10 @@ export const verifyEmail = async (req, res) => {
 }
 
 export const login = async (req, res) => {
+    if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
+  
   try {
     const { email, password } = req.body
     

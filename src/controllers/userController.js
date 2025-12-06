@@ -1,11 +1,11 @@
 import { supabase } from '../index.js'
 
-if (!supabase) {
-        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
-    }
 
 // Obtener todos los usuarios
 export const getAllUsers = async (req, res) => {
+  if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
   try {
     const { data, error } = await supabase
       .from('users')
@@ -21,6 +21,9 @@ export const getAllUsers = async (req, res) => {
 
 // Cambiar rol de usuario
 export const updateUserRole = async (req, res) => {
+  if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
   try {
     const { id, rol } = req.body
 
@@ -49,6 +52,9 @@ export const updateUserRole = async (req, res) => {
 
 // Cambiar estatus (activar/suspender)
 export const toggleUserStatus = async (req, res) => {
+  if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
   try {
     const { id } = req.params
 
@@ -83,6 +89,9 @@ export const toggleUserStatus = async (req, res) => {
 
 // Eliminar usuario
 export const removeUser = async (req, res) => {
+  if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
   try {
     const { id } = req.params
 

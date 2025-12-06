@@ -1,11 +1,11 @@
 import e from 'express'
 import { supabase } from '../index.js'
 
-if (!supabase) {
-        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
-    }
 
 export const add = async (req, res) => {
+  if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
   try {
     const { nombre, descripcion, precio, idUsuario, tipo, estatus,
             subtipo, numHabitaciones, numCuartos, numPisos,
@@ -42,6 +42,9 @@ export const add = async (req, res) => {
 }
 
 export const edit = async (req, res) => {
+  if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
     try {
         const { id } = req.params
         const { 
@@ -85,6 +88,9 @@ export const edit = async (req, res) => {
 }
 
 export const remove = async (req, res) => {
+  if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
   const { id } = req.params
 
   try {
@@ -102,6 +108,9 @@ export const remove = async (req, res) => {
 
 
 export const getAllServices = async (req, res) => {
+  if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
     try {
         const { data, error } = await supabase
             .from('service')
@@ -118,6 +127,9 @@ export const getAllServices = async (req, res) => {
 }
 
 export const getServiceById = async (req, res) => {
+  if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
     try {
         const { id } = req.params
         const { data, error } = await supabase
@@ -138,6 +150,9 @@ export const getServiceById = async (req, res) => {
 }
 
 export const getServicesByUserId = async (req, res) => {
+  if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
     try {
         const { idUsuario } = req.params
         const { data, error } = await supabase
