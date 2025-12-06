@@ -1,6 +1,10 @@
 import e from 'express'
 import { supabase } from '../index.js'
 
+if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
+
 export const add = async (req, res) => {
   try {
     const { nombre, descripcion, precio, idUsuario, tipo, estatus,

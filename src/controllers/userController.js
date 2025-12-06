@@ -1,5 +1,9 @@
 import { supabase } from '../index.js'
 
+if (!supabase) {
+        return res.status(503).json({ message: 'Servicio de base de datos no disponible' });
+    }
+
 // Obtener todos los usuarios
 export const getAllUsers = async (req, res) => {
   try {
