@@ -1,0 +1,63 @@
+name: Node.js CI/CD a EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: ⬇️ Checkout del código
+      uses: actions/checkout@v4
+      
+    - name: 🛠️ Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: 📦 Instalar dependencias
+      run: npm install
+      
+    - name: ✅ Ejecutar Pruebas de Integración (Supertest)
+      run: npm test
+
+    - name: 🐳 Construir y Empujar la Imagen (Opcional: Si usas un Container Registry)
+      # Si usas un Container Registry (AWS ECR, Docker Hub), aquí iría el login y el push.
+      # Para un despliegue directo a EC2 con el código fuente, este paso puede omitirse.
+      # Usaremos el código fuente para simplificar el script de despliegue.
+      run: echo "Pruebas pasadas. Iniciando despliegue..."
+      
+    - name: 🚀 Despliegue en EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # 1. Crear/Cambiar al directorio de la aplicación
+          APP_DIR="/home/${{ secrets.EC2_USER }}/node-backend"
+          mkdir -p $APP_DIR
+          cd $APP_DIR
+
+          # 2. Clonar/Actualizar el código desde GitHub
+          # Asegúrate de configurar un SSH key en la EC2 o usa un Personal Access Token para la URL HTTPS
+          REPO_URL="https://github.com/${{ github.repository }}.git"
+          if [ -d .git ]; then
+            git pull
+          else
+            git clone $REPO_URL .
+          fi
+
+          # 3. Reconstruir la imagen y relanzar el contenedor con docker-compose
+          # Nota: Necesitas el Dockerfile y docker-compose.yml en el repo
+          docker compose down --remove-orphans
+          docker compose build
+          docker compose up -d
+          
+          # 4. Limpiar imágenes antiguas no utilizadas
+          docker system prune -f
+          
+          echo "Despliegue finalizado exitosamente."
