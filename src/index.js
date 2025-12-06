@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import authRoutes from './routes/authRoutes.js'
 import serviceRoutes from'./routes/serviceRoutes.js'
 import bookingRoutes from './routes/bookingRoutes.js'
+import userRoutes from './routes/userRoutes.js'
 
 dotenv.config()
 const app = express()
@@ -19,8 +20,13 @@ export const supabase = createClient(
 
 // Rutas
 app.use('/api/auth', authRoutes)
+app.use('/api/users', userRoutes)
 app.use('/api/service', serviceRoutes)
 app.use('/api/booking', bookingRoutes)
+
+app.get('/', (req, res) => { 
+  res.status(200).json({ message: 'Bienvenido al server' });
+});
 
 const PORT = process.env.PORT || 3000 // Usa la variable de entorno o 3000 por defecto
 
