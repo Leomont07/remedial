@@ -4,7 +4,7 @@ on:
   # Se activa en cada push a la rama 'main'
   push:
     branches:
-      - main 
+      - master 
 
 jobs:
   build_and_deploy:
