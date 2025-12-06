@@ -7,7 +7,6 @@ import serviceRoutes from'./routes/serviceRoutes.js'
 import bookingRoutes from './routes/bookingRoutes.js'
 import userRoutes from './routes/userRoutes.js'
 
-dotenv.config()
 const app = express()
 app.use(cors({ origin: '*', credentials: true }))
 app.use(express.json())
